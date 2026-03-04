@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDefaultBoard } from "./defaults";
-import { kv } from "@vercel/kv";
+import { createClient } from "@vercel/kv";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +10,14 @@ export const dynamic = "force-dynamic";
 let memoryStore = null;
 
 async function getKv() {
-    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-        return kv;
+    const urlKey = Object.keys(process.env).find(k => k.endsWith('KV_REST_API_URL'));
+    const tokenKey = Object.keys(process.env).find(k => k.endsWith('KV_REST_API_TOKEN'));
+
+    if (urlKey && tokenKey && process.env[urlKey] && process.env[tokenKey]) {
+        return createClient({
+            url: process.env[urlKey],
+            token: process.env[tokenKey]
+        });
     }
     return null;
 }
