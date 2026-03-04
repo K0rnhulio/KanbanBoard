@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { getDefaultBoard } from "./defaults";
+import { kv } from "@vercel/kv";
+
+export const dynamic = "force-dynamic";
 
 /* ------------------------------------------------------------------ */
 /*  In-memory fallback when Vercel KV is not configured (local dev)   */
@@ -8,7 +11,6 @@ let memoryStore = null;
 
 async function getKv() {
     if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-        const { kv } = await import("@vercel/kv");
         return kv;
     }
     return null;
